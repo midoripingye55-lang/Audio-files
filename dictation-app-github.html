@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語・韓国語ディクテーション練習アプリ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '🎵';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 40px;
+            opacity: 0.15;
+        }
+        
+        .container::after {
+            content: '🎧';
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 40px;
+            opacity: 0.15;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::before {
+            content: '🎧';
+            margin-right: 10px;
+        }
+        
+        h1::after {
+            content: '📝';
+            margin-left: 10px;
+        }
+        
+        .setup-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .movie-select-group {
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #3b82f6;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        .practice-section {
+            display: none;
+        }
+        
+        .progress {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .segment-nav {
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #3b82f6;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .segment-nav label {
+            margin: 0;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .segment-nav input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid #3b82f6;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+        
+        .segment-nav button {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .answer-section {
+            margin: 20px 0;
+        }
+        
+        .audio-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .video-player {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 2px solid #764ba2;
+        }
+        
+        .video-player p {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .segment-number-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        #mediaPlayer {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #videoPlayer {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 10px;
+            border-left: 5px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .result h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+        
+        .result p {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        
+        .correct-word {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .incorrect-word {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .missing-word {
+            color: #ef4444;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #3b82f6;
+        }
+        
+        .stats h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .translation {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            border-radius: 10px;
+            border-left: 5px solid #ec4899;
+        }
+        
+        .translation h4 {
+            color: #9f1239;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .translation p {
+            color: #4a044e;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .modal-header h2 {
+            color: #333;
+            margin: 0;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close:hover {
+            color: #667eea;
+        }
+        
+        .segment-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .segment-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid #667eea;
+        }
+        
+        .segment-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .segment-item.current {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            font-weight: 600;
+        }
+        
+        .segment-item-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .segment-item.current .segment-item-number {
+            background: #3b82f6;
+        }
+        
+        .segment-item-time {
+            color: #666;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        
+        .segment-item-text {
+            margin-top: 8px;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .learning-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-learning {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 16px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-learning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-learning:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-download-csv {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .btn-download-csv:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-download-csv::before {
+            content: '📊 ';
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .stat-item {
+                margin: 10px 5px;
+            }
+            
+            .button-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>英語・韓国語ディクテーション練習アプリ</h1>
+        
+        <div class="setup-section">
+            <div class="movie-select-group">
+                <label for="movieSelect">🎬 映画・ドラマを選択</label>
+                <select id="movieSelect">
+                    <option value="">-- 選択してください --</option>
+                    <option value="Jerry Maguire">Jerry Maguire</option>
+                    <!-- 他の映画を追加する場合はここに追加 -->
+                </select>
+            </div>
+            
+            <button class="btn-primary" onclick="startPractice()">練習開始</button>
+        </div>
+        
+        <div class="practice-section" id="practiceSection">
+            <div class="segment-nav">
+                <label for="segmentInput">セグメント番号:</label>
+                <input type="number" id="segmentInput" min="1" value="1">
+                <button class="btn-primary" onclick="goToSegment()">移動</button>
+                <button class="btn-info" onclick="showSegmentList()">一覧表示</button>
+            </div>
+            
+            <div class="progress">
+                <span class="segment-number-badge" id="currentSegment">1</span>
+                <span id="progressText">セグメント 1 / 1</span>
+            </div>
+            
+            <div class="video-player">
+                <p>🎬 <strong>メディア再生</strong></p>
+                <audio id="mediaPlayer" controls style="display:none;">
+                    <source id="audioSource" type="audio/mpeg">
+                </audio>
+                <video id="videoPlayer" controls style="display:none;">
+                    <source id="videoSource" type="video/mp4">
+                </video>
+                
+                <div class="audio-controls">
+                    <button class="btn-secondary" onclick="replaySegment()">🔁 もう一度再生</button>
+                    <button class="btn-info" onclick="playSlower()">🐢 0.75倍速</button>
+                    <button class="btn-info" onclick="playNormal()">▶️ 通常速度</button>
+                </div>
+            </div>
+            
+            <div class="answer-section">
+                <label for="answerInput">✍️ あなたの解答を入力してください：</label>
+                <textarea id="answerInput" placeholder="ここに聞こえた英語または韓国語を入力してください..."></textarea>
+                
+                <button class="btn-primary" onclick="checkAnswer()">✓ 答え合わせ</button>
+                
+                <div class="button-row">
+                    <button class="btn-secondary" onclick="previousSegment()">⬅️ 前へ</button>
+                    <button class="btn-info" onclick="skipSegment()">⏭️ スキップ</button>
+                    <button class="btn-secondary" onclick="nextSegment()">次へ ➡️</button>
+                </div>
+                
+                <div class="learning-buttons">
+                    <button class="btn-learning" onclick="recordLearning('覚えた')">✓ 覚えた</button>
+                    <button class="btn-learning" onclick="recordLearning('やや理解')">△ やや理解</button>
+                    <button class="btn-learning" onclick="recordLearning('要復習')">× 要復習</button>
+                </div>
+                
+                <button class="btn-download-csv" onclick="downloadCSV()">学習記録をダウンロード (CSV)</button>
+            </div>
+            
+            <div id="resultSection"></div>
+            
+            <div class="stats">
+                <h3>📊 統計</h3>
+                <div class="stat-item">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">正答率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="correct">0</div>
+                    <div class="stat-label">正解数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total">0</div>
+                    <div class="stat-label">解答数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="segmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📋 セグメント一覧</h2>
+                <span class="close" onclick="closeSegmentList()">&times;</span>
+            </div>
+            <ul class="segment-list" id="segmentList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // 映画設定（SharePoint直接URL）
+        const MOVIES = {
+            "Jerry Maguire": {
+                video: "https://ive3yd8p.sharepoint.com/sites/DreamEyes/Studying%20Apps/Jerry%20Maguire/JerryMaguire_full.mp4",
+                subtitle_en: "https://ive3yd8p.sharepoint.com/sites/DreamEyes/Studying%20Apps/Jerry%20Maguire/Jerry_Maquire_en_adjusted_final.srt",
+                subtitle_ja: "https://ive3yd8p.sharepoint.com/sites/DreamEyes/Studying%20Apps/Jerry%20Maguire/Jerry_Maquire_ja_adjusted_final.srt"
+            }
+            // 他の映画を追加する場合:
+            // "Top Gun": {
+            //     video: "https://your-sharepoint-url.com/.../topgun.mp4",
+            //     subtitle_en: "https://your-sharepoint-url.com/.../topgun_en.srt",
+            //     subtitle_ja: "https://your-sharepoint-url.com/.../topgun_ja.srt"
+            // }
+        };
+
+        // グローバル変数
+        let subtitles = [];
+        let japaneseSubtitles = [];
+        let currentIndex = 0;
+        let mediaPlayer = null;
+        let stats = {
+            correct: 0,
+            total: 0
+        };
+        let checkInterval = null;
+        let learningRecords = [];
+
+        // 練習開始
+        async function startPractice() {
+            const selectedMovie = document.getElementById('movieSelect').value;
+            
+            if (!selectedMovie) {
+                alert('映画を選択してください');
+                return;
+            }
+            
+            const movieConfig = MOVIES[selectedMovie];
+            
+            try {
+                // 動画ファイルを読み込む
+                const videoPath = movieConfig.video;
+                const isVideo = videoPath.toLowerCase().includes('.mp4') || 
+                               videoPath.toLowerCase().includes('.webm');
+                
+                if (isVideo) {
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    const videoSource = document.getElementById('videoSource');
+                    videoSource.src = videoPath;
+                    videoPlayer.load();
+                    videoPlayer.style.display = 'block';
+                    document.getElementById('mediaPlayer').style.display = 'none';
+                    mediaPlayer = videoPlayer;
+                } else {
+                    const audioPlayer = document.getElementById('mediaPlayer');
+                    const audioSource = document.getElementById('audioSource');
+                    audioSource.src = videoPath;
+                    audioPlayer.load();
+                    audioPlayer.style.display = 'block';
+                    document.getElementById('videoPlayer').style.display = 'none';
+                    mediaPlayer = audioPlayer;
+                }
+                
+                // 英語字幕を読み込む
+                const srtPath = movieConfig.subtitle_en;
+                const srtResponse = await fetch(srtPath);
+                if (!srtResponse.ok) {
+                    throw new Error('字幕ファイルの読み込みに失敗しました');
+                }
+                const srtText = await srtResponse.text();
+                subtitles = parseSRT(srtText);
+                
+                // 日本語字幕を読み込む（オプション）
+                if (movieConfig.subtitle_ja) {
+                    try {
+                        const jaSrtPath = movieConfig.subtitle_ja;
+                        const jaSrtResponse = await fetch(jaSrtPath);
+                        if (jaSrtResponse.ok) {
+                            const jaSrtText = await jaSrtResponse.text();
+                            japaneseSubtitles = parseSRT(jaSrtText);
+                        }
+                    } catch (e) {
+                        console.log('日本語字幕の読み込みに失敗しました（オプションなので続行します）');
+                        japaneseSubtitles = [];
+                    }
+                }
+                
+                if (subtitles.length === 0) {
+                    alert('字幕ファイルが空か、読み込みに失敗しました');
+                    return;
+                }
+                
+                document.querySelector('.setup-section').style.display = 'none';
+                document.getElementById('practiceSection').style.display = 'block';
+                
+                currentIndex = 0;
+                stats = { correct: 0, total: 0 };
+                updateStats();
+                loadSegment();
+                
+            } catch (error) {
+                console.error('エラー:', error);
+                alert('ファイルの読み込みに失敗しました。\nエラー: ' + error.message + '\n\nSharePointへのアクセス権限があるか確認してください。');
+            }
+        }
+
+        // SRTファイルをパース
+        function parseSRT(content) {
+            const lines = content.split(/\r?\n/);
+            const segments = [];
+            let currentSegment = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line === '') {
+                    if (currentSegment) {
+                        segments.push(currentSegment);
+                        currentSegment = null;
+                    }
+                    continue;
+                }
+                
+                if (/^\d+$/.test(line)) {
+                    currentSegment = { number: parseInt(line), text: '' };
+                    continue;
+                }
+                
+                if (currentSegment && line.includes('-->')) {
+                    const times = line.split('-->');
+                    currentSegment.start = parseTime(times[0].trim());
+                    currentSegment.end = parseTime(times[1].trim());
+                    continue;
+                }
+                
+                if (currentSegment) {
+                    currentSegment.text += (currentSegment.text ? ' ' : '') + line;
+                }
+            }
+            
+            if (currentSegment) {
+                segments.push(currentSegment);
+            }
+            
+            return segments;
+        }
+
+        // 時間をパース
+        function parseTime(timeStr) {
+            const parts = timeStr.split(':');
+            const secondsParts = parts[2].split(',');
+            const hours = parseInt(parts[0]);
+            const minutes = parseInt(parts[1]);
+            const seconds = parseInt(secondsParts[0]);
+            const milliseconds = parseInt(secondsParts[1]);
+            
+            return hours * 3600 + minutes * 60 + seconds + milliseconds / 1000;
+        }
+
+        // 秒を時間文字列に変換
+        function secondsToTimeString(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            const ms = Math.floor((seconds % 1) * 1000);
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')},${String(ms).padStart(3, '0')}`;
+        }
+
+        // セグメントを読み込む
+        function loadSegment() {
+            const segment = subtitles[currentIndex];
+            
+            document.getElementById('currentSegment').textContent = currentIndex + 1;
+            document.getElementById('progressText').textContent = 
+                `セグメント ${currentIndex + 1} / ${subtitles.length}`;
+            document.getElementById('segmentInput').value = currentIndex + 1;
+            document.getElementById('answerInput').value = '';
+            document.getElementById('resultSection').innerHTML = '';
+            
+            mediaPlayer.currentTime = segment.start;
+            mediaPlayer.play();
+            
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+            
+            checkInterval = setInterval(() => {
+                if (mediaPlayer.currentTime >= segment.end) {
+                    mediaPlayer.pause();
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+            }, 100);
+        }
+
+        // 再生関連の関数
+        function replaySegment() {
+            const segment = subtitles[currentIndex];
+            mediaPlayer.currentTime = segment.start;
+            mediaPlayer.play();
+            
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+            
+            checkInterval = setInterval(() => {
+                if (mediaPlayer.currentTime >= segment.end) {
+                    mediaPlayer.pause();
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+            }, 100);
+        }
+
+        function playSlower() {
+            mediaPlayer.playbackRate = 0.75;
+            replaySegment();
+        }
+
+        function playNormal() {
+            mediaPlayer.playbackRate = 1.0;
+            replaySegment();
+        }
+
+        // 答え合わせ
+        function checkAnswer() {
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            const correctAnswer = subtitles[currentIndex].text;
+            
+            if (!userAnswer) {
+                alert('解答を入力してください');
+                return;
+            }
+            
+            stats.total++;
+            
+            const matchedIndices = findMatchingWords(correctAnswer, userAnswer);
+            const correctWords = correctAnswer.split(/\s+/);
+            const userWords = userAnswer.split(/\s+/);
+            
+            const correctCount = matchedIndices.size;
+            const totalWords = correctWords.length;
+            
+            if (correctCount === totalWords && userWords.length === totalWords) {
+                stats.correct++;
+            }
+            
+            updateStats();
+            displayResult(correctAnswer, userAnswer, matchedIndices);
+        }
+
+        // 結果を表示
+        function displayResult(correctAnswer, userAnswer, matchedIndices) {
+            const correctWords = correctAnswer.split(/\s+/);
+            const userWords = userAnswer.split(/\s+/);
+            
+            let correctHtml = '';
+            correctWords.forEach((word, index) => {
+                if (matchedIndices.has(index)) {
+                    correctHtml += `<span class="correct-word">${escapeHtml(word)}</span> `;
+                } else {
+                    correctHtml += `<span class="missing-word">${escapeHtml(word)}</span> `;
+                }
+            });
+            
+            const normalizedCorrect = correctWords.map(w => normalizeText(w));
+            let userHtml = '';
+            userWords.forEach(word => {
+                const normalized = normalizeText(word);
+                if (normalizedCorrect.includes(normalized)) {
+                    userHtml += `<span class="correct-word">${escapeHtml(word)}</span> `;
+                } else {
+                    userHtml += `<span class="incorrect-word">${escapeHtml(word)}</span> `;
+                }
+            });
+            
+            let translationHtml = '';
+            if (japaneseSubtitles.length > 0) {
+                const currentSegment = subtitles[currentIndex];
+                const matchingJapanese = japaneseSubtitles.filter(ja => {
+                    return (ja.start <= currentSegment.end && ja.end >= currentSegment.start);
+                });
+                
+                if (matchingJapanese.length > 0) {
+                    const japaneseText = matchingJapanese.map(ja => ja.text).join(' ');
+                    translationHtml = `
+                        <div class="translation">
+                            <h4>🌸 日本語訳</h4>
+                            <p>${escapeHtml(japaneseText)}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            const accuracy = Math.round((matchedIndices.size / correctWords.length) * 100);
+            
+            document.getElementById('resultSection').innerHTML = `
+                <div class="result">
+                    <h3>📝 結果</h3>
+                    <p><strong>正解:</strong> ${correctHtml}</p>
+                    <p><strong>あなたの解答:</strong> ${userHtml}</p>
+                    <p><strong>正答率:</strong> ${accuracy}% (${matchedIndices.size}/${correctWords.length} 単語)</p>
+                    ${translationHtml}
+                </div>
+            `;
+        }
+
+        // マッチする単語を見つける
+        function findMatchingWords(correctAnswer, userAnswer) {
+            const correctWords = correctAnswer.split(/\s+/);
+            const userWords = userAnswer.split(/\s+/);
+            
+            const m = correctWords.length;
+            const n = userWords.length;
+            
+            const dp = Array(m + 1).fill(null).map(() => Array(n + 1).fill(0));
+            
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    const correctNorm = normalizeText(correctWords[i - 1]);
+                    const userNorm = normalizeText(userWords[j - 1]);
+                    
+                    if (correctNorm === userNorm) {
+                        dp[i][j] = dp[i - 1][j - 1] + 1;
+                    } else {
+                        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+                    }
+                }
+            }
+            
+            const matchedIndices = new Set();
+            let i = m;
+            let j = n;
+            
+            while (i > 0 && j > 0) {
+                const correctNorm = normalizeText(correctWords[i - 1]);
+                const userNorm = normalizeText(userWords[j - 1]);
+                
+                if (correctNorm === userNorm) {
+                    matchedIndices.add(i - 1);
+                    i--;
+                    j--;
+                } else if (dp[i - 1][j] > dp[i][j - 1]) {
+                    i--;
+                } else {
+                    j--;
+                }
+            }
+            
+            return matchedIndices;
+        }
+
+        // テキストの正規化
+        function normalizeText(text) {
+            return text.toLowerCase()
+                .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function(s) {
+                    return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);
+                })
+                .replace(/　/g, ' ')
+                .replace(/[.,!?;:'"]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        // HTML エスケープ
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 統計更新
+        function updateStats() {
+            const accuracy = stats.total > 0 
+                ? Math.round((stats.correct / stats.total) * 100) 
+                : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            document.getElementById('correct').textContent = stats.correct;
+            document.getElementById('total').textContent = stats.total;
+        }
+
+        // ナビゲーション
+        function nextSegment() {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+                checkInterval = null;
+            }
+            
+            if (currentIndex < subtitles.length - 1) {
+                currentIndex++;
+                loadSegment();
+            } else {
+                alert('最後のセグメントです');
+            }
+        }
+
+        function previousSegment() {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+                checkInterval = null;
+            }
+            
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadSegment();
+            } else {
+                alert('最初のセグメントです');
+            }
+        }
+
+        function skipSegment() {
+            nextSegment();
+        }
+        
+        function goToSegment() {
+            const segmentNumber = parseInt(document.getElementById('segmentInput').value);
+            
+            if (isNaN(segmentNumber) || segmentNumber < 1 || segmentNumber > subtitles.length) {
+                alert(`1〜${subtitles.length}の範囲でセグメント番号を指定してください`);
+                return;
+            }
+            
+            if (checkInterval) {
+                clearInterval(checkInterval);
+                checkInterval = null;
+            }
+            
+            currentIndex = segmentNumber - 1;
+            loadSegment();
+        }
+        
+        function showSegmentList() {
+            const modal = document.getElementById('segmentModal');
+            const list = document.getElementById('segmentList');
+            
+            list.innerHTML = '';
+            
+            subtitles.forEach((segment, index) => {
+                const li = document.createElement('li');
+                li.className = 'segment-item' + (index === currentIndex ? ' current' : '');
+                li.onclick = () => {
+                    currentIndex = index;
+                    loadSegment();
+                    closeSegmentList();
+                };
+                
+                const timeStr = secondsToTimeString(segment.start);
+                const textPreview = segment.text.length > 100 
+                    ? segment.text.substring(0, 100) + '...' 
+                    : segment.text;
+                
+                li.innerHTML = `
+                    <span class="segment-item-number">#${index + 1}</span>
+                    <span class="segment-item-time">${timeStr}</span>
+                    <div class="segment-item-text">${escapeHtml(textPreview)}</div>
+                `;
+                
+                list.appendChild(li);
+            });
+            
+            modal.style.display = 'block';
+            
+            setTimeout(() => {
+                const currentItem = list.querySelector('.current');
+                if (currentItem) {
+                    currentItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+        }
+        
+        function closeSegmentList() {
+            document.getElementById('segmentModal').style.display = 'none';
+        }
+        
+        // 学習記録
+        function recordLearning(status) {
+            const currentSegment = subtitles[currentIndex];
+            const userAnswer = document.getElementById('answerInput').value.trim();
+            
+            let japaneseTranslation = '';
+            if (japaneseSubtitles.length > 0) {
+                const matchingJapanese = japaneseSubtitles.filter(ja => {
+                    return (ja.start <= currentSegment.end && ja.end >= currentSegment.start);
+                });
+                if (matchingJapanese.length > 0) {
+                    japaneseTranslation = matchingJapanese.map(ja => ja.text).join(' ');
+                }
+            }
+            
+            const record = {
+                timestamp: new Date().toLocaleString('ja-JP'),
+                segmentNumber: currentIndex + 1,
+                startTime: secondsToTimeString(currentSegment.start),
+                correctAnswer: currentSegment.text,
+                userAnswer: userAnswer,
+                translation: japaneseTranslation,
+                status: status,
+                accuracy: normalizeText(userAnswer) === normalizeText(currentSegment.text) ? '正解' : '不正解'
+            };
+            
+            learningRecords.push(record);
+            
+            const buttons = document.querySelectorAll('.btn-learning');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(status)) {
+                    const originalText = btn.textContent;
+                    btn.textContent = '✓ 記録しました';
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }, 1500);
+                }
+            });
+        }
+        
+        function downloadCSV() {
+            if (learningRecords.length === 0) {
+                alert('学習記録がありません。まずディクテーションを行ってください。');
+                return;
+            }
+            
+            const headers = ['日時', 'セグメント番号', '開始時刻', '正解', 'あなたの解答', '翻訳', 'ステータス', '判定'];
+            
+            const rows = learningRecords.map(record => [
+                record.timestamp,
+                record.segmentNumber,
+                record.startTime,
+                `"${record.correctAnswer.replace(/"/g, '""')}"`,
+                `"${record.userAnswer.replace(/"/g, '""')}"`,
+                `"${record.translation.replace(/"/g, '""')}"`,
+                record.status,
+                record.accuracy
+            ]);
+            
+            const csvContent = '\ufeff' + 
+                [headers, ...rows]
+                .map(row => row.join(','))
+                .join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            const timestamp = new Date().toISOString().slice(0, 10);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `dictation_records_${timestamp}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`学習記録をダウンロードしました！\n記録数: ${learningRecords.length}件`);
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('segmentModal');
+            if (event.target === modal) {
+                closeSegmentList();
+            }
+        }
+    </script>
+</body>
+</html>
